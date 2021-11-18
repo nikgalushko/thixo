@@ -3,6 +3,8 @@ package thixo
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestHtmlDate(t *testing.T) {
@@ -32,6 +34,28 @@ func TestToDate(t *testing.T) {
 	tpl := `{{toDate "2006-01-02" "2017-12-31" | date "02/01/2006"}}`
 	if err := runt(tpl, "31/12/2017"); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestToDateInLocation(t *testing.T) {
+	tests := map[string]struct {
+		location string
+		expected string
+	}{
+		"CET": {
+			location: "CET",
+			expected: "2006-01-02 03:00:00 +0100 CET",
+		},
+		"unknown": {
+			location: "unknown",
+			expected: "2006-01-02 03:00:00 +0000 UTC",
+		},
+	}
+
+	for title, tt := range tests {
+		actual := toDateInLocation("2006-01-02 15:04", "2006-01-02 03:00", tt.location)
+
+		require.Equal(t, tt.expected, actual.String(), title)
 	}
 }
 
@@ -116,5 +140,24 @@ func TestDurationRound(t *testing.T) {
 	}
 	if err := runtv(tpl, "3mo", map[string]interface{}{"Time": "2400h5s"}); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestIssue317(t *testing.T) {
+	expectedCET := "2006-01-02 03:00:00 +0000 CET"
+	expectedDZ := "2006-01-02 03:00 UTC"
+
+	for _, name := range []string{"GMT", "CET", "America/New_York", "EET", "Africa/Bangui"} {
+		var err error
+		time.Local, err = time.LoadLocation(name)
+		if err != nil {
+			panic(err)
+		}
+
+		dateCET := toDate("2006-01-02 15:04 MST", "2006-01-02 03:00 CET")
+		require.Equal(t, expectedCET, dateCET.String(), name)
+
+		dz := dateInZone("2006-01-02 15:04 MST", dateCET, "UTC")
+		require.Equal(t, expectedDZ, dz, name)
 	}
 }
