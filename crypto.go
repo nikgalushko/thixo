@@ -5,11 +5,6 @@ import (
 	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
-
-	// TODO: mark as deprecated and delete.
-	"crypto/dsa"  // nolint:staticcheck // delete it
-	"crypto/sha1" // nolint:gosec // delete it
-
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
@@ -19,7 +14,6 @@ import (
 	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"encoding/asn1"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
@@ -41,12 +35,6 @@ import (
 
 func sha256sum(input string) string {
 	hash := sha256.Sum256([]byte(input))
-	return hex.EncodeToString(hash[:])
-}
-
-// nolint:gosec // TODO: is weak primitive; mark as deprecated and delete in v4
-func sha1sum(input string) string {
-	hash := sha1.Sum([]byte(input))
 	return hex.EncodeToString(hash[:])
 }
 
@@ -166,14 +154,6 @@ func generatePrivateKey(typ string) string {
 	case "", "rsa":
 		// good enough for government work
 		priv, err = rsa.GenerateKey(rand.Reader, 4096)
-	case "dsa":
-		key := new(dsa.PrivateKey)
-		// again, good enough for government work
-		if err = dsa.GenerateParameters(&key.Parameters, rand.Reader, dsa.L2048N256); err != nil {
-			return fmt.Sprintf("failed to generate dsa params: %s", err)
-		}
-		err = dsa.GenerateKey(key, rand.Reader)
-		priv = key
 	case "ecdsa":
 		// again, good enough for government work
 		priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
@@ -189,24 +169,10 @@ func generatePrivateKey(typ string) string {
 	return string(pem.EncodeToMemory(pemBlockForKey(priv)))
 }
 
-// DSAKeyFormat stores the format for DSA keys.
-// Used by pemBlockForKey.
-type DSAKeyFormat struct {
-	Version       int
-	P, Q, G, Y, X *big.Int
-}
-
 func pemBlockForKey(priv interface{}) *pem.Block {
 	switch k := priv.(type) {
 	case *rsa.PrivateKey:
 		return &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(k)}
-	case *dsa.PrivateKey:
-		val := DSAKeyFormat{
-			P: k.P, Q: k.Q, G: k.G,
-			Y: k.Y, X: k.X,
-		}
-		enc, _ := asn1.Marshal(val)
-		return &pem.Block{Type: "DSA PRIVATE KEY", Bytes: enc}
 	case *ecdsa.PrivateKey:
 		b, _ := x509.MarshalECPrivateKey(k)
 		return &pem.Block{Type: "EC PRIVATE KEY", Bytes: b}
@@ -249,22 +215,6 @@ func parsePrivateKeyPEM(pemBlock string) (crypto.PrivateKey, error) {
 			return nil, fmt.Errorf("parsing EC private key from PEM: %s", err)
 		}
 		return priv, nil
-	case "DSA":
-		var k DSAKeyFormat
-		_, err := asn1.Unmarshal(block.Bytes, &k)
-		if err != nil {
-			return nil, fmt.Errorf("parsing DSA private key from PEM: %s", err)
-		}
-		priv := &dsa.PrivateKey{
-			PublicKey: dsa.PublicKey{
-				Parameters: dsa.Parameters{
-					P: k.P, Q: k.Q, G: k.G,
-				},
-				Y: k.Y,
-			},
-			X: k.X,
-		}
-		return priv, nil
 	default:
 		return nil, fmt.Errorf("invalid private key type %s", block.Type)
 	}
@@ -274,8 +224,6 @@ func getPublicKey(priv crypto.PrivateKey) (crypto.PublicKey, error) {
 	switch k := priv.(type) {
 	case interface{ Public() crypto.PublicKey }:
 		return k.Public(), nil
-	case *dsa.PrivateKey:
-		return &k.PublicKey, nil
 	default:
 		return nil, fmt.Errorf("unable to get public key for type %T", priv)
 	}

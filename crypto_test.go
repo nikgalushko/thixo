@@ -32,12 +32,6 @@ func TestSha256Sum(t *testing.T) {
 		t.Error(err)
 	}
 }
-func TestSha1Sum(t *testing.T) {
-	tpl := `{{"abc" | sha1sum}}`
-	if err := runt(tpl, "a9993e364706816aba3e25717850c26c9cd0d89d"); err != nil {
-		t.Error(err)
-	}
-}
 
 func TestAdler32Sum(t *testing.T) {
 	tpl := `{{"abc" | adler32sum}}`
@@ -126,14 +120,6 @@ func TestGenPrivateKey(t *testing.T) {
 	}
 	if !strings.Contains(out, "RSA PRIVATE KEY") {
 		t.Error("Expected RSA PRIVATE KEY")
-	}
-	tpl = `{{genPrivateKey "dsa"}}`
-	out, err = runRaw(tpl, nil)
-	if err != nil {
-		t.Error(err)
-	}
-	if !strings.Contains(out, "DSA PRIVATE KEY") {
-		t.Error("Expected DSA PRIVATE KEY")
 	}
 	tpl = `{{genPrivateKey "ecdsa"}}`
 	out, err = runRaw(tpl, nil)

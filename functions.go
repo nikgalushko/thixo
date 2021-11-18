@@ -159,7 +159,6 @@ var genericMap = map[string]interface{}{
 	"nindent":    nindent,
 	"replace":    replace,
 	"plural":     plural,
-	"sha1sum":    sha1sum,
 	"sha256sum":  sha256sum,
 	"adler32sum": adler32sum,
 	"toString":   strval,
