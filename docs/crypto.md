@@ -2,6 +2,14 @@
 
 Thixo provides a couple of advanced cryptographic functions.
 
+## sha1sum
+
+The `sha1sum` function receives a string, and computes it's SHA1 digest.
+
+```
+sha1sum "Hello world!"
+```
+
 ## sha256sum
 
 The `sha256sum` function receives a string, and computes it's SHA256 digest.
@@ -68,6 +76,7 @@ block.
 It takes one of the values for its first param:
 
 - `ecdsa`: Generate an elliptic curve DSA key (P256)
+- `dsa`: Generate a DSA key (L2048N256)
 - `rsa`: Generate an RSA 4096 key
 - `ed25519`: Generate an Ed25519 key
 
