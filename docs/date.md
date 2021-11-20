@@ -113,7 +113,7 @@ htmlDateInZone (now) "UTC"
 
 ## toDate, mustToDate
 
-`toDate` converts a string to a date. The first argument is the date layout and
+`toDate` converts a string to a date in UTC timezone. The first argument is the date layout and
 the second the date string. If the string can't be convert it returns the zero
 value.
 `mustToDate` will return an error in case the string cannot be converted.
@@ -123,4 +123,17 @@ This is useful when you want to convert a string date to another format
 
 ```
 toDate "2006-01-02" "2017-12-31" | date "02/01/2006"
+```
+## toDateInLocation, mustToDateInLocation
+
+`toDateInLocation` converts a string to a date in special timezone. The first argument is the date layout and
+the second the date string and last argument the timezone. If the timezone is incorrected it uses UTC.
+If the string can't be convert it returns the zerovalue.
+`mustToDateInLocation` will return an error in case the string cannot be converted.
+
+This is useful when you want to convert a string date to another format with special timezone/location
+
+```
+// 2012-07-09 05:02:00 +0200 CEST
+toDateInLocation "Jan 2, 2006 at 3:04pm (MST)" "Jul 9, 2012 at 5:02am (CEST)" "Europe/Berlin"
 ```
