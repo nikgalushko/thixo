@@ -139,12 +139,27 @@ func durationRound(duration interface{}) string {
 }
 
 func toDate(fmt, str string) time.Time {
-	t, _ := time.ParseInLocation(fmt, str, time.Local)
+	t, _ := time.ParseInLocation(fmt, str, time.UTC)
 	return t
 }
 
 func mustToDate(fmt, str string) (time.Time, error) {
 	return time.ParseInLocation(fmt, str, time.Local)
+}
+
+func toDateInLocation(fmt, str, location string) time.Time {
+	t, _ := mustToDateInLocation(fmt, str, location)
+
+	return t
+}
+
+func mustToDateInLocation(fmt, str, location string) (time.Time, error) {
+	loc, err := time.LoadLocation(location)
+	if err != nil {
+		loc = time.UTC
+	}
+
+	return time.ParseInLocation(fmt, str, loc)
 }
 
 func unixEpoch(date time.Time) string {
