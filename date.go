@@ -82,44 +82,11 @@ func dateAgo(date interface{}) string {
 }
 
 func duration(sec interface{}) string {
-	var n int64
-	switch value := sec.(type) {
-	default:
-		n = 0
-	case string:
-		n, _ = strconv.ParseInt(value, 10, 64)
-	case int64:
-		n = value
-	case int32:
-		n = int64(value)
-	case int:
-		n = int64(value)
-	case uint32:
-		n = int64(value)
-	case uint64:
-		n = int64(value)
-	case uint:
-		n = int64(value)
-	case float32:
-		return (time.Duration(value * float32(time.Second))).String()
-	case float64:
-		return (time.Duration(value * float64(time.Second))).String()
-	}
-	return (time.Duration(n) * time.Second).String()
+	return parseDuration(sec).String()
 }
 
 func durationRound(duration interface{}) string {
-	var d time.Duration
-	switch duration := duration.(type) {
-	default:
-		d = 0
-	case string:
-		d, _ = time.ParseDuration(duration)
-	case int64:
-		d = time.Duration(duration)
-	case time.Time:
-		d = time.Since(duration)
-	}
+	d := parseDuration(duration)
 
 	u := uint64(d)
 	neg := d < 0
@@ -178,4 +145,37 @@ func mustToDateInLocation(fmt, str, location string) (time.Time, error) {
 
 func unixEpoch(date time.Time) string {
 	return strconv.FormatInt(date.Unix(), 10)
+}
+
+func parseDuration(i interface{}) time.Duration {
+	var n int64
+	switch value := i.(type) {
+	default:
+		n = 0
+	case int64:
+		n = value
+	case int32:
+		n = int64(value)
+	case int:
+		n = int64(value)
+	case uint32:
+		n = int64(value)
+	case uint64:
+		n = int64(value)
+	case uint:
+		n = int64(value)
+	case float32:
+		return time.Duration(value * float32(time.Second))
+	case float64:
+		return time.Duration(value * float64(time.Second))
+	case string:
+		d, err := time.ParseDuration(value)
+		if err == nil {
+			return d
+		}
+		n, _ = strconv.ParseInt(value, 10, 64)
+	case time.Time:
+		return time.Since(value)
+	}
+	return time.Duration(n) * time.Second
 }

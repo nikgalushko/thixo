@@ -143,14 +143,19 @@ func TestDuration(t *testing.T) {
 
 func TestDurationRound(t *testing.T) {
 	tpl := "{{ durationRound .Time }}"
-	if err := runtv(tpl, "2h", map[string]interface{}{"Time": "2h5s"}); err != nil {
-		t.Error(err)
+	tests := map[string]interface{}{
+		"2h":  "2h5s",
+		"1d":  "24h5s",
+		"3mo": "2400h5s",
+		"1m":  72,
+		"2m":  int32(122),
+		"1s":  float64(1.32),
 	}
-	if err := runtv(tpl, "1d", map[string]interface{}{"Time": "24h5s"}); err != nil {
-		t.Error(err)
-	}
-	if err := runtv(tpl, "3mo", map[string]interface{}{"Time": "2400h5s"}); err != nil {
-		t.Error(err)
+
+	for expected, in := range tests {
+		if err := runtv(tpl, expected, map[string]interface{}{"Time": in}); err != nil {
+			t.Error(err)
+		}
 	}
 }
 
