@@ -341,3 +341,19 @@ func TestSeq(t *testing.T) {
 		}
 	}
 }
+
+func TestAbs(t *testing.T) {
+	tpl := "{{abs .Value}}"
+
+	tests := map[string]interface{}{
+		"10":  10.0,
+		"12":  -12,
+		"200": "-200",
+	}
+
+	for expected, in := range tests {
+		if err := runtv(tpl, expected, map[string]interface{}{"Value": in}); err != nil {
+			t.Error(err)
+		}
+	}
+}

@@ -74,3 +74,12 @@ Returns a random integer value from min (inclusive) to max (exclusive).
 {{ randInt 12 30 }}
 ```
 The above will produce a random number in the range [12,30].
+
+## abs
+Returns the absolute value of input. 
+
+```
+{{ abs -10 }}
+```
+
+The above example will produce 10.
