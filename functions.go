@@ -238,6 +238,7 @@ var genericMap = map[string]interface{}{
 	"ceil":    ceil,
 	"floor":   floor,
 	"round":   round,
+	"abs":     abs,
 
 	// string slices. Note that we reverse the order b/c that's better
 	// for template processing.

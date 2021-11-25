@@ -184,3 +184,7 @@ func execDecimalOp(a interface{}, b []interface{}, f func(d1, d2 decimal.Decimal
 	rslt, _ := prt.Float64()
 	return rslt
 }
+
+func abs(v interface{}) float64 {
+	return math.Abs(toFloat64(v))
+}
