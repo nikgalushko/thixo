@@ -43,3 +43,42 @@ func cidrsubnet(prefix string, newBits, num int) string {
 
 	return ip.String()
 }
+
+func cidrsubnets(prefix string, newBits ...int) []string {
+	if len(newBits) == 0 {
+		return nil
+	}
+
+	for _, n := range newBits {
+		if n < 1 || n > 32 {
+			return nil
+		}
+	}
+
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return nil
+	}
+
+	networkNumberSize := len(network.IP) * 8
+	prefixLength, _ := network.Mask.Size()
+	current, _ := cidr.PreviousSubnet(network, newBits[0]+prefixLength)
+
+	ret := make([]string, len(newBits))
+	for i, length := range newBits {
+		length += prefixLength
+		if length > networkNumberSize {
+			return nil
+		}
+
+		next, overflow := cidr.NextSubnet(current, length)
+		if overflow || !network.Contains(next.IP) {
+			return nil
+		}
+
+		current = next
+		ret[i] = current.String()
+	}
+
+	return ret
+}
