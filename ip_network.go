@@ -20,3 +20,12 @@ func cidrhost(prefix string, num int) string {
 
 	return ip.String()
 }
+
+func cidrnetmask(prefix string) string {
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return ""
+	}
+
+	return net.IP(network.Mask).String()
+}
