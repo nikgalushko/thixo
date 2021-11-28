@@ -29,3 +29,17 @@ func cidrnetmask(prefix string) string {
 
 	return net.IP(network.Mask).String()
 }
+
+func cidrsubnet(prefix string, newBits, num int) string {
+	_, network, err := net.ParseCIDR(prefix)
+	if err != nil {
+		return ""
+	}
+
+	ip, err := cidr.SubnetBig(network, newBits, big.NewInt(int64(num)))
+	if err != nil {
+		return ""
+	}
+
+	return ip.String()
+}
