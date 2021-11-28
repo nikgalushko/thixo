@@ -389,4 +389,10 @@ var genericMap = map[string]interface{}{
 	// URLs:
 	"urlParse": urlParse,
 	"urlJoin":  urlJoin,
+
+	// CIDR
+	"cidrhost":    cidrhost,
+	"cidrnetmask": cidrnetmask,
+	"cidrsubnet":  cidrsubnet,
+	"cidrsubnets": cidrsubnets,
 }
