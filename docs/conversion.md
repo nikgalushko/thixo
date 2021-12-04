@@ -6,6 +6,7 @@ The following type conversion functions are provided by Thixo:
 - `float64`: Convert to a `float64`.
 - `int`: Convert to an `int` at the system's width.
 - `int64`: Convert to an `int64`.
+- `toBool`: Convert to an `bool`
 - `toDecimal`: Convert a unix octal to a `int64`.
 - `toString`: Convert to a string.
 - `toStrings`: Convert a list, slice, or array to a list of strings.

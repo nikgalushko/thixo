@@ -17,6 +17,7 @@ import (
 	util "github.com/Masterminds/goutils"
 	"github.com/huandu/xstrings"
 	"github.com/shopspring/decimal"
+	"github.com/spf13/cast"
 )
 
 // FuncMap produces the function map.
@@ -168,6 +169,7 @@ var genericMap = map[string]interface{}{
 
 	// Wrap Atoi to stop errors.
 	"atoi":      func(a string) int { i, _ := strconv.Atoi(a); return i },
+	"toBool":    func(v interface{}) bool { return cast.ToBool(v) },
 	"int64":     toInt64,
 	"int":       toInt,
 	"float64":   toFloat64,
