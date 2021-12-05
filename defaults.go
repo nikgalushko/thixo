@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 func init() {
@@ -90,6 +92,26 @@ func any(v ...interface{}) bool {
 		}
 	}
 	return false
+}
+
+func toYaml(v interface{}) string {
+	data, err := yaml.Marshal(v)
+	if err != nil {
+		return ""
+	}
+
+	return strings.TrimSuffix(string(data), "\n")
+}
+
+func fromYaml(v string) map[string]interface{} {
+	ret := make(map[string]interface{})
+
+	err := yaml.Unmarshal([]byte(v), &ret)
+	if err != nil {
+		ret["Error"] = err.Error()
+	}
+
+	return ret
 }
 
 // fromJson decodes JSON into a structured value, ignoring errors.
