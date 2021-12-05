@@ -88,8 +88,8 @@ func TestRegex(t *testing.T) {
 	assert.NoError(t, runt(`{{ regexQuoteMeta "pretzel" }}`, "pretzel"))
 }
 
-func TestBool(t *testing.T) {
-	assert.NoError(t, runt(`{{ if (bool "true") }}blah{{else}}:({{end}}`, "blah"))
+func TestToBool(t *testing.T) {
+	assert.NoError(t, runt(`{{ if (toBool "true") }}blah{{else}}:({{end}}`, "blah"))
 }
 
 // runt runs a template and checks that the output exactly matches the expected string.
